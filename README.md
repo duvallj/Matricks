@@ -3,6 +3,8 @@ A semi-golfing language built around matrix operations
 
 # Documentation
 ## How it works
+### How to run
+ * `matricks.py <filename> <input>`
 ### File structure
 * **Matricks** programs are made up of multiple lines
 * Command pointer for each line starts at 0
