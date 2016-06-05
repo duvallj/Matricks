@@ -31,8 +31,8 @@ A semi-golfing language built around matrix operations
 | m  |  3 [expression f][float x][float y] | Makes a new matrix (x rows by y cols) with the formula (f) specified  |
 | r  |  0 | Substitue row # in the forumla in `m` |
 | c  |  0 | Substitue col # in the formula in `m`  |
-| l  |  0 | Substitue # of rows for current matrix  |
-| L  |  0 | Substitue # of cols for current matrix  |
+| L  |  0 | Substitue # of rows for current matrix  |
+| l  |  0 | Substitue # of cols for current matrix  |
 | k  |  1 [matrix x] | Sets to current matrix to `x`  |
 | s  |  3 [float r][float c][float v] |  Sets the spot at `(r,c)` to `v` |
 | g  |  2 [float r][float c] |  Gets the value at `(r,c)` |
@@ -53,7 +53,7 @@ A semi-golfing language built around matrix operations
 | y  | 0 |  Returns the next byte of input. 0 for eof |
 | p  | 1 [matrix x] | Returns all elements in `x` multiplied together |
 | d  | 1 [matrix x] | Returns all elements in `x` added together |
-| ~  | 1 [float or matrix v] | If v is a float, returns the bitwise not of `v`. Otherwise, returns all elements of `v` bitwise not-ed. |
+| ~  | 1 [float or matrix v] | If v is a float, returns the bitwise not of `v`. Otherwise, returns all elements of `v` bitwise not-ed. | x  | 0 | Returns the current matrix |
 
 * All arithmetic commands have arguments on the right and left sides, like so: `<arg1><command><arg2>`
   * Empty arguments with throw an error
