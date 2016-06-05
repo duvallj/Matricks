@@ -53,7 +53,8 @@ A semi-golfing language built around matrix operations
 | y  | 0 |  Returns the next byte of input. 0 for eof |
 | p  | 1 [matrix x] | Returns all elements in `x` multiplied together |
 | d  | 1 [matrix x] | Returns all elements in `x` added together |
-| ~  | 1 [float or matrix v] | If v is a float, returns the bitwise not of `v`. Otherwise, returns all elements of `v` bitwise not-ed. | x  | 0 | Returns the current matrix |
+| ~  | 1 [float or matrix v] | If v is a float, returns the bitwise not of `v`. Otherwise, returns all elements of `v` bitwise not-ed. |
+| x  | 0 | Returns the current matrix |
 
 * All arithmetic commands have arguments on the right and left sides, like so: `<arg1><command><arg2>`
   * Empty arguments with throw an error
