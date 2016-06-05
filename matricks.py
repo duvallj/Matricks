@@ -39,14 +39,17 @@ def make_matrix(formula, rows, cols, mem):
     return 0
 
 def as_matrix(val):
-    if mm.isnum(val):
-        return [[val]]
-    elif mm.isnum(eval(val)):
-        return [[float(val)]]
+    if isinstance(val,list):
+        if isinstance(val[0],list):
+            return val
+        else:
+            return [val]
     else:
-        return val
+        return [[float(val)]]
 
 def _get(row, col, mem):
+    if row<0 or int(row)>=len(mem.current) or col<0 or int(col)>=len(mem.current[int(row)]):
+        return 0
     return mem.current[int(row)][int(col)]
 
 def _set(row, col, val, mem):
@@ -113,9 +116,9 @@ def interpret(line,mem,main=-1):
         elif char=='V':
             mem.current=rr.shift_up(mem.current,as_float(cmd[2][0],mem))
         elif char=='q':
-            mem.current=rr.cut_from_tr(mem.current,as_float(cmd[2][0],mem),as_float(cmd[2][1],mem))
+            mem.current=rr.cut_from_tl(mem.current,as_float(cmd[2][0],mem),as_float(cmd[2][1],mem))
         elif char=='z':
-            mem.current=rr.cut_from_bl(mem.current,as_float(cmd[2][0],mem),as_float(cmd[2][1],mem))
+            mem.current=rr.cut_from_br(mem.current,as_float(cmd[2][0],mem),as_float(cmd[2][1],mem))
         elif char=='"':
             to_return.append("{}".format(ord(cmd[2][0])))
         elif char=="'":
@@ -169,7 +172,8 @@ def interpret(line,mem,main=-1):
             to_return.append(str(mm.apply_math(eval(cmd[2][0]),eval(cmd[2][1]),mm.grea_than)))
         elif char=='T':
             to_return.append(str(mm.apply_math(eval(cmd[2][0]),eval(cmd[2][1]),mm.grea_than_oreq)))
-
+        elif char=='x':
+            to_return.append(copy.deepcopy(mem.current))
         index+=1
         if main != -1:
             mem.pointers[main] = index
@@ -185,8 +189,10 @@ def main():
     mem = Memory()
     mem.instructions = [lexer.parse_line(line) for line in lexer.read_file(sys.argv[1])]
     mem.pointers = [0 for x in range(len(mem.instructions))]
+    mem.current = as_matrix(eval(sys.argv[2]))
     interpret(copy.deepcopy(mem.instructions[0]),mem,0)
     print(mem.current)
 
 if __name__ == "__main__":
+    sys.argv.append('challenge1.cks.py')
     main()

@@ -3,7 +3,7 @@ COMMANDS = set(['m','k','s','g','j',\
                     'A','U','B','V',\
                     'q','z','o',\
                 '"',"'",'y','n','p',\
-                'd','~'])
+                'd','~','x'])
 DYADS = [['=','!'],['e','E','t','T'],\
          ['|'],['$'],['&'],['+','-'],\
          ['*','/','%'],['^'],['P','D']]
@@ -35,8 +35,10 @@ def get(lst,pos):
 
 def fuse_nums(lst):
     for p in range(len(lst)-1,-1,-1):
-        if isnum(get(lst,p)) and (isnum(get(lst,p-1)) or \
-           (get(lst,p-1)=='-' and get(lst,p-2) in ALL_DYADS)):
+        if isnum(get(lst,p)) and get(lst,p-1)!='"' and get(lst,p-2)!='"' and \
+           (isnum(get(lst,p-1)) or \
+           (get(lst,p-1)=='-' and get(lst,p-2) in ALL_DYADS) or \
+            get(lst,p-1)=='.'):
             lst[p] = lst[p-1]+lst[p]
             del lst[p-1]
         elif isinstance(lst[p],list):
@@ -60,8 +62,7 @@ def build_dyad_tree(lst):
             if t>=len(lst): break
             for op in operations:
                 if lst[t]==op:
-                    index = lst.index(lst[t])
-                    return [[lst[t], [build_dyad_tree(lst[:index]), build_dyad_tree(lst[index+1:])]]]
+                    return [[lst[t], [build_dyad_tree(lst[:t]), build_dyad_tree(lst[t+1:])]]]
             t+=1
     return lst
 
@@ -108,7 +109,7 @@ def parse_line(cmds):
 
 def main():
     print("starting unit tests...")
-    line = "ka[mr/c:2:2;]:[mr*c:3:3;];;"
+    line = "((3+2)&1)+5"
     print(line)
     print(parse_line(line))
     print("done!")

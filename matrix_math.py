@@ -85,19 +85,19 @@ def power(val1, val2):
     return val1**val2
 
 def bit_and(val1, val2):
-    return val1&val2
+    return int(val1)&int(val2)
 
 def bit_or(val1, val2):
-    return val1|val2
+    return int(val1)|int(val2)
 
 def bit_xor(val1, val2):
-    return val1^val2
+    return int(val1)^int(val2)
 
 def bit_not(val):
     if isnum(val):
-        return ~val
+        return ~int(val)
     else:
-        return [[~col for col in row] for row in val]
+        return [[~int(col) for col in row] for row in val]
 
 def equals(val1, val2):
     return val1==val2
