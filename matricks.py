@@ -131,7 +131,21 @@ def interpret(line,mem,main=-1):
                 to_return.append(str(ord(program_input[0])))
                 program_input = program_input[1:]
         elif char=='n':
-            pass
+            global program_input
+            if len(program_input)==0:
+                to_return.append("0")
+            else:
+                newinput = lexer.fuse_nums([c for c in program_input])
+                index=0
+                for num in newinput:
+                    index+=1
+                    try:
+                        num = float(num)
+                        to_return.append(str(num))
+                        break
+                    except (TypeError, ValueError):
+                        continue
+                program_input = program_input[program_input.index(newinput[index]):]
         elif char=='p':
             to_return.append(str(mm.matrix_product(as_matrix(cmd[2][0]))))
         elif char=='d':
@@ -184,15 +198,26 @@ def interpret(line,mem,main=-1):
         return to_return[0]
     else:
         return str(eval("+".join(to_return)))
+        
+program_input = ''
 
 def main():
     mem = Memory()
     mem.instructions = [lexer.parse_line(line) for line in lexer.read_file(sys.argv[1])]
     mem.pointers = [0 for x in range(len(mem.instructions))]
     mem.current = as_matrix(eval(sys.argv[2]))
+    global program_input
+    program_input = sys.argv[3]
     interpret(copy.deepcopy(mem.instructions[0]),mem,0)
     print(mem.current)
 
 if __name__ == "__main__":
-    sys.argv.append('challenge1.cks.py')
+    if len(sys.argv)==0:
+        sys.argv.append("")
+    if len(sys.argv)==1:
+        sys.argv.append("whydontyouhaveafile.cks")
+    if len(sys.argv)==2:
+        sys.argv.append('[[]]')
+    if len(sys.argv)==3:
+        sys.argv.append('')
     main()
