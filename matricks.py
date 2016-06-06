@@ -59,6 +59,7 @@ def _set(row, col, val, mem):
     return 0
 
 def interpret(line,mem,main=-1):
+    global program_input
     to_return = []
     index = 0
     while index<len(line):
@@ -126,14 +127,12 @@ def interpret(line,mem,main=-1):
         elif char=="'":
             print(chr(int(as_float(cmd[2][0],mem))),end="")
         elif char=='y':
-            global program_input
             if len(program_input)==0:
                 to_return.append("0")
             else:
                 to_return.append(str(ord(program_input[0])))
                 program_input = program_input[1:]
         elif char=='n':
-            global program_input
             if len(program_input)==0:
                 to_return.append("0")
             else:
@@ -147,7 +146,10 @@ def interpret(line,mem,main=-1):
                         break
                     except (TypeError, ValueError):
                         continue
-                program_input = program_input[program_input.index(newinput[index]):]
+                if index>=len(newinput):
+                    program_input=''
+                else:
+                    program_input = program_input[program_input.index(newinput[index]):]
         elif char=='p':
             to_return.append(str(mm.matrix_product(as_matrix(cmd[2][0]))))
         elif char=='d':
