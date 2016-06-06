@@ -5,6 +5,8 @@ import lexer
 import sys
 import copy
 
+program_input = ''
+
 def rec_replace(matrx, to, fill):
     if isinstance(matrx,list):
         for x in range(len(matrx)):
@@ -198,8 +200,6 @@ def interpret(line,mem,main=-1):
         return to_return[0]
     else:
         return str(eval("+".join(to_return)))
-        
-program_input = ''
 
 def main():
     mem = Memory()
