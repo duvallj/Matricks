@@ -4,18 +4,18 @@ def add_below(matrix1, matrix2):
     temp = []
     for row in matrix1:
         temp.append(copy.copy(row))
-        for i in range(len(matrix1)-len(matrix2)):
+        for i in range(len(matrix1[0])-len(matrix2[0])):
             temp[len(temp)-1].append(0)
     for row in matrix2:
         temp.append(copy.copy(row))
-        for i in range(len(matrix2)-len(matrix1)):
+        for i in range(len(matrix2[0])-len(matrix1[0])):
             temp[len(temp)-1].append(0)
     return temp
 
 def add_above(matrix1, matrix2):
     return add_below(matrix2, matrix1)
 
-def add_left(matrix1, matrix2):
+def add_right(matrix1, matrix2):
     temp=[]
     l1=len(matrix1)
     l2=len(matrix2)
@@ -28,13 +28,13 @@ def add_left(matrix1, matrix2):
 
     return temp
 
-def add_right(matrix1, matrix2):
+def add_left(matrix1, matrix2):
     return add_left(matrix2, matrix1)
 
 def main():
     print("Running unit tests...")
-    a=[[1,2,3]]
-    b=[[1,2],[3,4]]
+    a=[[1]]
+    b=[[2],[3],[4]]
     print(a)
     print(b)
     c=add_below(a,b)

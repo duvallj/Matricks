@@ -98,24 +98,28 @@ def interpret(line,mem,main=-1):
             line = mem.instructions[where]
             index = mem.pointers[where]-1
         elif char=='i':
+            line = copy.deepcopy(line)
+            to_ins=[]
             if as_float(interpret(cmd[2][0],mem),mem):
-                interpret(cmd[2][1],mem)
+                to_ins=cmd[2][1]
             else:
-                interpret(cmd[2][2],mem)
+                to_ins=cmd[2][2]
+            for c in range(len(to_ins)-1, -1, -1):
+                line.insert(index+1,to_ins[c])
         elif char=='a':
-            mem.current=aa.add_left(mem.current,as_matrix(cmd[2][0]))
+            mem.current=aa.add_right(mem.current,as_matrix(cmd[2][0]))
         elif char=='u':
             mem.current=aa.add_below(mem.current,as_matrix(cmd[2][0]))
         elif char=='b':
-            mem.current=aa.add_right(mem.current,as_matrix(cmd[2][0]))
+            mem.current=aa.add_left(mem.current,as_matrix(cmd[2][0]))
         elif char=='v':
             mem.current=aa.add_above(mem.current,as_matrix(cmd[2][0]))
         elif char=='A':
-            mem.current=rr.shift_left(mem.current,as_float(cmd[2][0],mem))
+            mem.current=rr.shift_right(mem.current,as_float(cmd[2][0],mem))
         elif char=='U':
             mem.current=rr.shift_below(mem.current,as_float(cmd[2][0],mem))
         elif char=='B':
-            mem.current=rr.shift_right(mem.current,as_float(cmd[2][0],mem))
+            mem.current=rr.shift_left(mem.current,as_float(cmd[2][0],mem))
         elif char=='V':
             mem.current=rr.shift_up(mem.current,as_float(cmd[2][0],mem))
         elif char=='q':
@@ -125,7 +129,7 @@ def interpret(line,mem,main=-1):
         elif char=='"':
             to_return.append("{}".format(ord(cmd[2][0])))
         elif char=="'":
-            print(chr(int(as_float(cmd[2][0],mem))),end="")
+            print(chr(int(as_float(cmd[2][0],mem))))#,end="")
         elif char=='y':
             if len(program_input)==0:
                 to_return.append("0")
@@ -203,17 +207,23 @@ def interpret(line,mem,main=-1):
     else:
         return str(eval("+".join(to_return)))
 
-def main():
-    mem = Memory()
+def main(mem):
     mem.instructions = [lexer.parse_line(line) for line in lexer.read_file(sys.argv[1])]
     mem.pointers = [0 for x in range(len(mem.instructions))]
     mem.current = as_matrix(eval(sys.argv[2]))
     global program_input
     program_input = sys.argv[3]
     interpret(copy.deepcopy(mem.instructions[0]),mem,0)
-    print(mem.current)
 
 if __name__ == "__main__":
+    asciiprint=False
+    prettyprint=False
+    if sys.argv.count("--asciiprint"):
+        asciiprint=True
+        del sys.argv[sys.argv.index("--asciiprint")]
+    if sys.argv.count("--prettyprint"):
+        prettyprint=True
+        del sys.argv[sys.argv.index("--prettyprint")]
     if len(sys.argv)==0:
         sys.argv.append("")
     if len(sys.argv)==1:
@@ -222,4 +232,19 @@ if __name__ == "__main__":
         sys.argv.append('[[]]')
     if len(sys.argv)==3:
         sys.argv.append('')
-    main()
+    mem=Memory()
+    main(mem)
+    if asciiprint:
+        for row in mem.current:
+            st=""
+            for col in row:
+                st+=chr(int(col))
+            print(st)
+    elif prettyprint:
+        for row in mem.current:
+            st=""
+            for col in row:
+                st+=str(col)+" "
+            print(st)
+    else:
+        print(mem.current)

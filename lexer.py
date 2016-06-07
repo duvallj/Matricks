@@ -86,7 +86,8 @@ def parse_line(cmds):
                     if (cmds[ins]==';' or (len(stk)==1 and cmds[ins]==':')) and cmds[ins-1]!='"':stk.pop()
                     ins+=1
                 ins-=1
-                args.append(parse_line(cmds[old+1:ins]))
+                if char!='"':args.append(parse_line(cmds[old+1:ins]))
+                else: args.append(cmds[old+1:ins])
                 current=cmds[ins]
                 last = ins
             commands.append([char,args])
