@@ -143,17 +143,17 @@ def interpret(line,mem,main=-1):
                 newinput = lexer.fuse_nums([c for c in program_input])
                 index=0
                 for num in newinput:
-                    index+=1
                     try:
-                        num = float(num)
-                        to_return.append(str(num))
+                        nnum = float(num)
+                        to_return.append(str(nnum))
+                        index = newinput.index(num)
                         break
                     except (TypeError, ValueError):
                         continue
                 if index>=len(newinput):
                     program_input=''
                 else:
-                    program_input = program_input[program_input.index(newinput[index]):]
+                    program_input = program_input[program_input.index(newinput[index])+len(newinput[index]):]
         elif char=='p':
             to_return.append(str(mm.matrix_product(as_matrix(cmd[2][0]))))
         elif char=='d':

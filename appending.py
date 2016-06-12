@@ -29,7 +29,7 @@ def add_right(matrix1, matrix2):
     return temp
 
 def add_left(matrix1, matrix2):
-    return add_left(matrix2, matrix1)
+    return add_right(matrix2, matrix1)
 
 def main():
     print("Running unit tests...")
