@@ -2,9 +2,12 @@
 A semi-golfing language built around matrix operations
 
 # Documentation
-## How it works
 ### How to run
- * `matricks.py <filename> <input>`
+ * `matricks.py <filename> <input> [flags]`
+  * Input should be a 2d matrix. It will be padded with 0s to become retangular if it is not already.
+  * `--asciiprint`: Prints values of cells as ascii characters formatted in a rectangle with newlines. 0 is assumed to be `' '`.
+  * `--prettyprint`: Prints numerical values of the cells.
+  * `--asciiinput`: Instead of reading input of numerical values, read as the value of the ascii charactes. `[],\` are special, need to be escaped with `\`.
 
 ### File structure
 * **Matricks** programs are made up of multiple lines
@@ -17,14 +20,17 @@ A semi-golfing language built around matrix operations
  * Only 2 data types, 2d matrix and float
  * Float cast to 1x1 matrix containing value
  * Matrix cast to float as sum of elements
+
 ### Scope
  * New scopes created using `[...]` or `{...}`
  * Code inside brackets evaulated to make new matrix
  * `[...]` starts with blank matrix
  * `{...}` starts with copy of current matrix
+
 ## Commands
  * All non-arithmetic commands take arguments like so: `<command>:<arg1>:<arg2>;`
   * Empty arguments are assumed to be 0
+  * However, all args must exist
 
 | Command  | # args | Description  |
 |---|---|---|
@@ -70,18 +76,18 @@ A semi-golfing language built around matrix operations
 |---|---|
 | P  |  Needs 2 matricies. Returns product |
 | D  |  Needs 2 matricies. Returns sum |
-| +  |  Sum |
-| -  |  Difference |
-| *  |  Product |
-| /  |  Quotient |
-| %  |  Modulus |
-| ^  |  Exponent |
-| &  |  Bitwise AND |
-| |  |  Bitwise OR |
-| $  |  Bitwise XOR |
-| =  |  Equals |
-| !  |  Not euals |
-| e  |  Less than |
-| E  |  Less than or equal to |
-| t  |  Greater than |
-| T  |  Greater than or equal to |
+| `+`  |  Sum |
+| `-`  |  Difference |
+| `*`  |  Product |
+| `/`  |  Quotient |
+| `%`  |  Modulus |
+| `^`  |  Exponent |
+| `&`  |  Bitwise AND |
+| `|`  |  Bitwise OR |
+| `$`  |  Bitwise XOR |
+| `=`  |  Equals |
+| `!`  |  Not euals |
+| `e`  |  Less than |
+| `E`  |  Less than or equal to |
+| `t`  |  Greater than |
+| `T`  |  Greater than or equal to |
