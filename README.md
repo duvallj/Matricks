@@ -35,10 +35,13 @@ A semi-golfing language built around matrix operations
 | Command  | # args | Description  |
 |---|---|---|
 | m  |  3 [expression f][float x][float y] | Makes a new matrix (x rows by y cols) with the formula (f) specified  |
-| r  |  0 | Substitue row # in the forumla in `m` |
-| c  |  0 | Substitue col # in the formula in `m`  |
-| L  |  0 | Substitue # of rows for current matrix  |
-| l  |  0 | Substitue # of cols for current matrix  |
+| r  |  0 | Substitute row # in the forumla in `m` |
+| c  |  0 | Substitute col # in the formula in `m`  |
+| F  |  3 [expression f][float x][float y] | Runs a double-nested for loop `{0..y-1}{0..x-1}` with the formula specified |
+| W  |  0 | Substitute row # in the formula in `F` |
+| Q  |  0 | Substitute col # in the formula in `F` |
+| L  |  0 | Substitute # of rows for current matrix  |
+| l  |  0 | Substitute # of cols for current matrix  |
 | k  |  1 [matrix x] | Sets to current matrix to `x`  |
 | s  |  3 [float r][float c][float v] |  Sets the spot at `(r,c)` to `v` |
 | g  |  2 [float r][float c] |  Gets the value at `(r,c)` |
@@ -61,7 +64,14 @@ A semi-golfing language built around matrix operations
 | p  | 1 [matrix x] | Returns all elements in `x` multiplied together |
 | d  | 1 [matrix x] | Returns all elements in `x` added together |
 | ~  | 1 [float or matrix v] | If v is a float, returns the bitwise not of `v`. Otherwise, returns all elements of `v` bitwise not-ed. |
-| x  | 0 | Returns the current matrix (Deprecated, can use `{}`) |
+| w  | 1 [float f] | Rotates the current matrix up `f` units |
+| x  | 1 [float f] | Rotates the current matrix down `f` units |
+| I  | 1 [float f] | Rotates the current matrix left `f` units |
+| K  | 1 [float f] | Rotates the current matrix right `f` units |
+| Y  | 0  | Flips the current matrix on the y axis |
+| X  | 0  | Flips the current matrix on the x axis |
+| M  | 0  | Turns the current matrix left 90 degrees |
+| R  | 0  | Turns the current matrix right 90 degrees |
 
 * All arithmetic commands have arguments on the right and left sides, like so: `<arg1><command><arg2>`
   * Empty arguments with throw an error
