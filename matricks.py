@@ -1,6 +1,7 @@
 import matrix_math as mm
 import appending as aa
 import removal as rr
+import shifting as ss
 import lexer
 import sys
 import copy
@@ -36,9 +37,16 @@ def make_matrix(formula, rows, cols, mem):
             rec_replace(cpy,'r',str(row))
             rec_replace(cpy,'c',str(col))
             temp[len(temp)-1].append(as_float(interpret(cpy,mem),mem))
-    
     mem.current = temp
     return 0
+
+def for_loop(formula, rows, cols, mem):
+    for row in range(int(rows)):
+        for col in range(int(cols)):
+            cpy = copy.deepcopy(formula)
+            rec_replace(cpy,'W',str(row))
+            rec_replace(cpy,'Q',str(col))
+            interpret(cpy,mem)
 
 def as_matrix(val):
     if isinstance(val,list):
@@ -84,6 +92,8 @@ def interpret(line,mem,main=-1):
         rec_replace(cmd[2], 'L', str(len(mem.current)))
         if char=='m':
             make_matrix(cmd[2][0],as_float(interpret(cmd[2][1],mem),mem),as_float(interpret(cmd[2][2],mem),mem),mem)
+        elif char=='F':
+            for_loop(cmd[2][0],as_float(cmd[2][1],mem),as_float(cmd[2][2],mem),mem)
         elif char=='k':
             mem.current = as_matrix(cmd[2][0])
         elif char=='s':
@@ -129,7 +139,7 @@ def interpret(line,mem,main=-1):
         elif char=='"':
             to_return.append("{}".format(ord(cmd[2][0])))
         elif char=="'":
-            print(chr(int(as_float(cmd[2][0],mem))))#,end="")
+            print(chr(int(as_float(cmd[2][0],mem))),end="")
         elif char=='y':
             if len(program_input)==0:
                 to_return.append("0")
@@ -158,6 +168,22 @@ def interpret(line,mem,main=-1):
             to_return.append(str(mm.matrix_product(as_matrix(cmd[2][0]))))
         elif char=='d':
             to_return.append(str(mm.matrix_sum(as_matrix(cmd[2][0]))))
+        elif char=='w':
+            mem.current=ss.rotate_up(mem.current,as_float(cmd[2][0]))
+        elif char=='x':
+            mem.current=ss.rotate_down(mem.current,as_float(cmd[2][0]))
+        elif char=='I':
+            mem.current=ss.rotate_left(mem.current,as_float(cmd[2][0]))
+        elif char=='K':
+            mem.current=ss.rotate_right(mem.current,as_float(cmd[2][0]))
+        elif char=='Y':
+            mem.current=ss.flip_y(mem.current)
+        elif char=='X':
+            mem.current=ss.flip_y(mem.current)
+        elif char=='M':
+            mem.current=ss.turn_left(mem.current)
+        elif char=='R':
+            mem.current=ss.turn_right(mem.current)
         elif char=='P':
             to_return.append(mm.dot_product(as_matrix(cmd[2][0]),as_matrix(cmd[2][1])))
         elif char=='D':
