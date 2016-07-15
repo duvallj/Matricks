@@ -3,11 +3,11 @@ A semi-golfing language built around matrix operations
 
 # Documentation
 ### How to run
- * `matricks.py <filename> <input> [flags]`
-  * Input should be a 2d matrix. It will be padded with 0s to become retangular if it is not already.
-  * `--asciiprint`: Prints values of cells as ascii characters formatted in a rectangle with newlines. 0 is assumed to be `' '`.
+ * `matricks.py <filename> <matrix> <input> [flags]`
+  * Matrix will be padded with 0s to become retangular if it is not already.
+  * `--asciiprint`: Prints values of cells as ascii characters formatted in a rectangle with newlines. 0 is assumed to be a single space.
   * `--prettyprint`: Prints numerical values of the cells.
-  * `--asciiinput`: Instead of reading input of numerical values, read as the value of the ascii charactes. `[],\` are special, need to be escaped with `\`.
+  * `--asciiinput`: Instead of reading matrix of numerical values, read as the value of the ascii charactes. `[],\` are special, need to be escaped with `\`.
 
 ### File structure
 * **Matricks** programs are made up of multiple lines
@@ -63,7 +63,8 @@ A semi-golfing language built around matrix operations
 | n  | 0 | Returns the next valid float from input. 0 for no more values. |
 | p  | 1 [matrix x] | Returns all elements in `x` multiplied together |
 | d  | 1 [matrix x] | Returns all elements in `x` added together |
-| ~  | 1 [float or matrix v] | If v is a float, returns the bitwise not of `v`. Otherwise, returns all elements of `v` bitwise not-ed. |
+| ~  | 1 [float f] | Returns the bitwise not of `f` |
+| ~  | 1 [matrix x] | Returns all elements of `x` bitwise not-ed. |
 | w  | 1 [float f] | Rotates the current matrix up `f` units |
 | x  | 1 [float f] | Rotates the current matrix down `f` units |
 | I  | 1 [float f] | Rotates the current matrix left `f` units |
@@ -72,6 +73,9 @@ A semi-golfing language built around matrix operations
 | X  | 0  | Flips the current matrix on the x axis |
 | M  | 0  | Turns the current matrix left 90 degrees |
 | R  | 0  | Turns the current matrix right 90 degrees |
+| ?  | 2 [float a][float b]  | Returns a random number. Equvalent to `random.uniform(a,b)` |
+| `_` | 1 [float a] | Returns the float rounded towards negative infinity |
+| `_` | 1 [matrix x] | Returns a matrix with every element in the original rounded towards negative infinity |
 
 * All arithmetic commands have arguments on the right and left sides, like so: `<arg1><command><arg2>`
   * Empty arguments with throw an error
