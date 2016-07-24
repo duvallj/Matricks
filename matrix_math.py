@@ -1,4 +1,5 @@
 import numbers
+import math
 
 class InvalidMatrixError(Exception):
     def __init__(self,value):
@@ -53,8 +54,10 @@ def isnum(val):
     return isinstance(val, numbers.Number)
 
 def apply_math(val1, val2, func):
-    n1= isnum(val1)
-    n2= isnum(val2)
+    if isinstance(val1,str): val1=float(val1)
+    if isinstance(val2,str): val2=float(val2)
+    n1 = isnum(val1)
+    n2 = isnum(val2)
     if n1 and n2:
         return func(val1, val2)
     if n1 and not n2:
@@ -99,23 +102,29 @@ def bit_not(val):
     else:
         return [[~int(col) for col in row] for row in val]
 
+def bit_not(val):
+    if isnum(val):
+        return math.floor(val)
+    else:
+        return [[math.floor(col) for col in row] for row in val]
+
 def equals(val1, val2):
-    return val1==val2
+    return int(val1==val2)
 
 def not_equals(val1, val2):
-    return val1!=val2
+    return int(val1!=val2)
 
 def less_than(val1, val2):
-    return val1<val2
+    return int(val1<val2)
 
 def less_than_oreq(val1, val2):
-    return val1<=val2
+    return int(val1<=val2)
 
 def grea_than(val1, val2):
-    return val1>val2
+    return int(val1>val2)
 
 def grea_than_oreq(val1, val2):
-    return val1>=val2
+    return int(val1>=val2)
 
 def main():
     print("Starting unit tests...")

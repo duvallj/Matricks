@@ -1,14 +1,18 @@
 COMMANDS = set(['m','k','s','g','j',\
                 'i','a','u','b','v',\
-                    'A','U','B','V',\
-                    'q','z','o',\
-                '"',"'",'y','n','p',\
-                'd','~','x'])
+                'A','U','B','V','q',\
+                'z','o','"',"'",'y',\
+                'n','p','d','~','x',\
+                'w','I','K','Y','X',\
+                'M','R','F','?','_'])
+
 DYADS = [['=','!'],['e','E','t','T'],\
          ['|'],['$'],['&'],['+','-'],\
          ['*','/','%'],['^'],['P','D']]
 
-ALL_DYADS = ['=','!','e','E','t','T','|','$','&','+','-','*','/','%','^','p','d']
+ALL_DYADS = set(['=','!','e','E','t','T',\
+                 '|','$','&','+','-','*',\
+                 '/','%','^','P','D'])
 
 SCOPE = set(['[','{'])
 DESCOPE = set([']','}'])
@@ -86,7 +90,8 @@ def parse_line(cmds):
                     if (cmds[ins]==';' or (len(stk)==1 and cmds[ins]==':')) and cmds[ins-1]!='"':stk.pop()
                     ins+=1
                 ins-=1
-                args.append(parse_line(cmds[old+1:ins]))
+                if char!='"':args.append(parse_line(cmds[old+1:ins]))
+                else: args.append(cmds[old+1:ins])
                 current=cmds[ins]
                 last = ins
             commands.append([char,args])
@@ -99,7 +104,14 @@ def parse_line(cmds):
                 if cmds[ins] in SCOPE and cmds[ins-1]!='"': stk.append(1)
                 if cmds[ins] in DESCOPE and cmds[ins-1]!='"': stk.pop()
                 ins+=1
-            commands.append([char,parse_line(cmds[old:ins-1])])
+            ins-=1
+            commands.append([char,parse_line(cmds[old:ins])])
+        elif char=='<': #special list building case
+            end = find_end(cmds[ins:])+ins
+            expr = rectanglize(brace_expression(cmds[ins:end]))
+            expr = [[parse_line(col) for col in row] for row in expr]
+            commands.append([char,expr])
+            ins = end
         else:
             commands.append(char)
         ins+=1
@@ -107,11 +119,61 @@ def parse_line(cmds):
     commands = build_dyad_tree(commands)
     return commands
 
+def rectanglize(matrix):
+    d = depth(matrix)
+    if d==0:
+        return [[matrix]]
+    elif d==1:
+        return [matrix]
+    elif d==2:
+        return matrix
+    elif d>2:
+        for row in range(len(matrix)):
+            matrix[row] = flatten(matrix[row])
+        return matrix
+
+def flatten(v):
+    if isinstance(v,list):
+        return sum(list(map(flatten,v)),[])
+    else:
+        return [v]
+    
+def depth(matrix):
+    if isinstance(matrix,list):
+        if len(matrix)<1:
+            return 1
+        return max(map(depth,matrix))+1
+    else:
+        return 0
+
+def find_end(string):
+    c=1;i=d=0
+    while c:
+        d+=-~'<>>'.count(string[i])%3-1
+        i+=1
+        c=i<len(string)and 0<d
+    return i
+
+def split_on_commas(string):
+    if len(string)<1:return[]
+    i=0
+    while i<len(string) and','!=string[i]: i+=find_end(string[i:])
+    return [string[:i]] + split_on_commas(string[i+1:])
+
+def brace_expression(s):
+    h=s.count
+    if h('<')<1:return s
+    f,l=s.index('<'),find_end(s)
+    return list(map(brace_expression,split_on_commas(s[1:len(s)-1])))
+
 def main():
-    print("starting unit tests...")
-    line = "((3+2)&1)+5"
+    print("starting unit test...")
+    line = "k<<g:;>,<g1:1;>>;"
     print(line)
     print(parse_line(line))
+    expr = '<<g:;>,<2,1>>'
+    print(expr)
+    print(brace_expression(expr))
     print("done!")
 
 if __name__ == "__main__":
