@@ -143,19 +143,11 @@ def interpret(line,mem,main=-1):
         elif char=='v':
             mem.current=aa.add_above(mem.current,as_matrix(cmd[2][0]))
         elif char=='A':
-<<<<<<< HEAD
-            mem.current=rr.shift_right(mem.current,as_float(cmd[2][0],mem))
-=======
             mem.current=uu.shift_right(mem.current,as_float(cmd[2][0],mem))
->>>>>>> refs/remotes/origin/local
         elif char=='U':
             mem.current=uu.shift_below(mem.current,as_float(cmd[2][0],mem))
         elif char=='B':
-<<<<<<< HEAD
-            mem.current=rr.shift_left(mem.current,as_float(cmd[2][0],mem))
-=======
             mem.current=uu.shift_left(mem.current,as_float(cmd[2][0],mem))
->>>>>>> refs/remotes/origin/local
         elif char=='V':
             mem.current=uu.shift_up(mem.current,as_float(cmd[2][0],mem))
         elif char=='q':
@@ -165,7 +157,7 @@ def interpret(line,mem,main=-1):
         elif char=='"':
             to_return.append("{}".format(ord(cmd[2][0])))
         elif char=="'":
-            print(chr(int(as_float(cmd[2][0],mem))))#,end="")
+            print(chr(int(as_float(cmd[2][0],mem))),end="")
         elif char=='y':
             if len(program_input)==0:
                 to_return.append("0")
@@ -265,11 +257,7 @@ def main(mem):
     interpret(copy.deepcopy(mem.instructions[0]),mem,0)
 
 if __name__ == "__main__":
-<<<<<<< HEAD
     asciiprint=False
-=======
-    asciiprint=True
->>>>>>> refs/remotes/origin/local
     prettyprint=False
     if sys.argv.count("--asciiprint"):
         asciiprint=True
@@ -284,11 +272,7 @@ if __name__ == "__main__":
     if len(sys.argv)==2:
         sys.argv.append('[[88, 32, 88, 32, 68, 68], [32, 88, 32, 32, 68, 32, 68], [88, 32, 88, 32, 68, 68]]')
     if len(sys.argv)==3:
-<<<<<<< HEAD
         sys.argv.append('')
-=======
-        sys.argv.append('3')
->>>>>>> refs/remotes/origin/local
     mem=Memory()
     main(mem)
     if asciiprint:
