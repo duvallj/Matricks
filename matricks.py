@@ -16,7 +16,7 @@ USED_CHARS = set(['[', ']', '{', '}', 'm', 'r', 'c', 'L',\
               '-', '*', '/', '%', '^', '|', '$', '=',\
               '!', 'e', 'E', 't', 'T', '0', '1', '2',\
               '3', '4', '5', '6', '7', '8', '9', '(',\
-              ')', '.', ';', ':', '<', '>', ','])
+              ')', '.', ';', ':', '<', '>', ',','C'])
 
 def rec_replace(matrx, to, fill):
     if isinstance(matrx,list):
@@ -85,6 +85,10 @@ def _set(row, col, val, mem):
     return 0
 
 def interpret(line,mem,main=-1):
+    try:
+        return float(line[0])
+    except (ValueError,TypeError,IndexError):
+        pass
     global program_input
     to_return = []
     index = 0
@@ -234,6 +238,8 @@ def interpret(line,mem,main=-1):
             to_return.append(random.uniform(as_float(cmd[2][0],mem),as_float(cmd[2][1],mem)))
         elif char=='_':
             to_return.append(mm.floor(cmd[2][0]))
+        elif char=='C':
+            to_return.append(uu.contains(as_matrix(cmd[2][0]),as_float(cmd[2][1],mem)))
         elif char=='<':
             cmd[2] = [[interpret(col,mem) for col in row] for row in cmd[2]]
             to_return.append(uu.pad(cmd[2]))
@@ -241,11 +247,9 @@ def interpret(line,mem,main=-1):
         if main != -1:
             mem.pointers[main] = index
     if len(to_return)==0:
-        return '0'
-    elif isinstance(to_return[0],list):
-        return to_return[0]
+        return 0
     else:
-        return str(eval("+".join(map(str,to_return))))
+        return to_return.pop()
 
 def main(mem):
     mem.instructions = [lexer.parse_line(line) for line in lexer.read_file(sys.argv[1])]
@@ -268,9 +272,9 @@ if __name__ == "__main__":
     if len(sys.argv)==0:
         sys.argv.append("")
     if len(sys.argv)==1:
-        sys.argv.append("./3dart.cks")
+        sys.argv.append("./sublist.cks")
     if len(sys.argv)==2:
-        sys.argv.append('[[88, 32, 88, 32, 68, 68], [32, 88, 32, 32, 68, 32, 68], [88, 32, 88, 32, 68, 68]]')
+        sys.argv.append('[[3,3,3,1,3]]')
     if len(sys.argv)==3:
         sys.argv.append('')
     mem=Memory()

@@ -4,7 +4,8 @@ COMMANDS = set(['m','k','s','g','j',\
                 'z','o','"',"'",'y',\
                 'n','p','d','~','x',\
                 'w','I','K','Y','X',\
-                'M','R','F','?','_'])
+                'M','R','F','?','_',\
+                'C'])
 
 DYADS = [['=','!'],['e','E','t','T'],\
          ['|'],['$'],['&'],['+','-'],\
@@ -168,7 +169,7 @@ def brace_expression(s):
 
 def main():
     print("starting unit test...")
-    line = "k<<g:;>,<g1:1;>>;"
+    line = "k({}|{X;})*{m?33:126;*iC<126,89>:gr:c;;:0.9:1;:L:l;};"
     print(line)
     print(parse_line(line))
     expr = '<<g:;>,<2,1>>'

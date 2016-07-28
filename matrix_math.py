@@ -102,11 +102,13 @@ def bit_not(val):
     else:
         return [[~int(col) for col in row] for row in val]
 
-def bit_not(val):
+def floor(val):
     if isnum(val):
-        return math.floor(val)
+        return int(val)
+    elif isinstance(val,str):
+        return int(float(val))
     else:
-        return [[math.floor(col) for col in row] for row in val]
+        return [[int(col) for col in row] for row in val]
 
 def equals(val1, val2):
     return int(val1==val2)

@@ -60,3 +60,11 @@ def pprint(matrix):
         for col in row:
             print(col,end=' ')
         print('')
+
+def contains(matrix, num):
+    for row in matrix:
+        for col in row:
+            if col==num:
+                return 1
+    return 0
+        
