@@ -55,8 +55,8 @@ A semi-golfing language built around matrix operations
 | B  |  1 [float u] | Rotates the current matrix left by `u` units  |
 | V  |  1 [float u] | Rotates the current matrix up by `u` units  |
 | U  |  1 [float u] | Rotates the current matrix down by `u` units  |
-| q  |  2 [float d][float l] |  Slices the current matrix, cutting down `d` units and right `r` units from the top left. |
-| z  |  2 [float u][float r] |  Slices the current matrix, cutting up `u` units and left `l` units from the bottom right. |
+| q  |  2 [float d][float r] |  Slices the current matrix, cutting down `d` units and right `r` units from the top left. |
+| z  |  2 [float u][float l] |  Slices the current matrix, cutting up `u` units and left `l` units from the bottom right. |
 | "  |  1 [character c] | Returns the ASCII value of `c`.  |
 | '  |  1 [float f] | Prints out the ASCII character with value `f`.  |
 | y  | 0 |  Returns the next byte of input. 0 for eof |
@@ -65,10 +65,6 @@ A semi-golfing language built around matrix operations
 | d  | 1 [matrix x] | Returns all elements in `x` added together |
 | ~  | 1 [float f] | Returns the bitwise not of `f` |
 | ~  | 1 [matrix x] | Returns all elements of `x` bitwise not-ed. |
-| w  | 1 [float f] | Rotates the current matrix up `f` units |
-| x  | 1 [float f] | Rotates the current matrix down `f` units |
-| I  | 1 [float f] | Rotates the current matrix left `f` units |
-| K  | 1 [float f] | Rotates the current matrix right `f` units |
 | Y  | 0  | Flips the current matrix on the y axis |
 | X  | 0  | Flips the current matrix on the x axis |
 | M  | 0  | Turns the current matrix left 90 degrees |
