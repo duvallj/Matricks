@@ -44,33 +44,29 @@ def turn_right(matrix):
         out.append(outrow)
     return out
 
-def dot_range(start,stop,step):
-    start=int(start)
-    stop=int(stop)
-    diff=(stop>start)-(start>stop)
-    return list(range(start,stop+diff,int(step)*diff))
+def pad(matrix):
+    row_len = max(map(len,matrix))
+    out = []
+    for row in matrix:
+        outrow = []
+        for col in row:
+            outrow.append(col)
+        outrow.extend([0]*(row_len-len(row)))
+        out.append(outrow)
+    return out
 
-def find_end(string):
-    c=1;i=d=0
-    while c:
-        d+=-~'<>>'.count(string[i])%3-1
-        i+=1
-        c=i<len(string)and 0<d
-    return i
+def pprint(matrix):
+    for row in matrix:
+        for col in row:
+            print(col,end=' ')
+        print('')
 
-def split_on_commas(string):
-    if len(string)<1:return[]
-    i=0
-    while i<len(string) and','!=string[i]: i+=find_end(string[i:])
-    return [string[:i]] + split_on_commas(string[i+1:])
-
-#combine=lambda a,b:[c+d for c in a for d in b]if a and b else b if not a else a
-
-def brace_expression(s):
-    h=s.count
-    if h('<')<1:return[float(s)]
-    f,l=s.index('<'),find_end(s)
-    if h('<')<2and h('..')>0and f<1:s=s[1:len(s)-1].split('..');return dot_range(s[0],s[1],s[2])if len(s)>2else dot_range(s[0],s[1],1)
-    return list(map(list,map(brace_expression,split_on_commas(s[1:len(s)-1]))))
-
-
+def contains(matrix, num):
+    for row in matrix:
+        for col in row:
+            if col==num:
+                return 1
+    return 0
+        
+def to_string(val):
+    return [[int(c) for c in str(val)]]

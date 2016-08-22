@@ -68,12 +68,6 @@ def apply_math(val1, val2, func):
         return [[func(val1[x][y], val2[x][y]) \
                  for y in range(min(len(val1[x]),len(val2[x])))] \
                 for x in range(min(len(val1),len(val2)))]
-
-def apply_unmath(val, func):
-    if isnum(val):
-        return func(val)
-    else:
-        return [[func(col) for col in row] for row in val]
     
 def add(val1, val2):
     return val1+val2
@@ -103,13 +97,18 @@ def bit_xor(val1, val2):
     return int(val1)^int(val2)
 
 def bit_not(val):
-    return ~int(val)
+    if isnum(val):
+        return ~int(val)
+    else:
+        return [[~int(col) for col in row] for row in val]
 
 def floor(val):
-    return int(val)
-
-def inverse(val):
-    return -val
+    if isnum(val):
+        return int(val)
+    elif isinstance(val,str):
+        return int(float(val))
+    else:
+        return [[int(col) for col in row] for row in val]
 
 def equals(val1, val2):
     return int(val1==val2)

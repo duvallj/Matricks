@@ -1,4 +1,62 @@
+import copy
+
 num_reflect = lambda num,l:~(num-l)+1
+
+def add(matrix1, matrix2, where):
+    if where=='a':
+        return add_right(matrix1, matrix2)
+    elif where=='b':
+        return add_left(matrix1, matrix2)
+    elif where=='v':
+        return add_above(matrix1, matrix2)
+    else:
+        return add_below(matrix1, matrix2)
+
+def shift(matrix, val, where):
+    if where=='A':
+        return shift_right(matrix, val)
+    elif where=='B':
+        return shift_left(matrix, val)
+    elif where=='V':
+        return shift_up(matrix, val)
+    else:
+        return shift_down(matrix,val)
+
+def apply_op(matrix, op):
+    if op=='Y':
+        return flip_y(matrix)
+    elif op=='X':
+        return flip_x(matrix)
+    elif op=='M':
+        return turn_left(matrix)
+    else:
+        return turn_right(matrix)
+
+def add_below(matrix1, matrix2):
+    temp = []
+    for row in matrix1:
+        temp.append(copy.deepcopy(row))
+    for row in matrix2:
+        temp.append(copy.deepcopy(row))
+    return pad(temp)
+
+def add_above(matrix1, matrix2):
+    return add_below(matrix2, matrix1)
+
+def add_right(matrix1, matrix2):
+    temp=[]
+    l1=len(matrix1)
+    l2=len(matrix2)
+    for row in range(min(l1,l2)):
+        temp.append(matrix1[row]+matrix2[row])
+    for row in range(l2-l1):
+        temp.append([0]*len(matrix1[0])+matrix2[l1+row])
+    for row in range(l1-l2):
+        temp.append(matrix1[l2+row]+[0]*len(matrix2[0]))
+    return pad(temp)
+
+def add_left(matrix1, matrix2):
+    return add_right(matrix2, matrix1)
 
 def cut_from_tl(matrix, down, left):
     return [row[int(left):] for row in matrix[int(down):]]
@@ -68,3 +126,5 @@ def contains(matrix, num):
                 return 1
     return 0
         
+def to_string(val):
+    return [[int(c) for c in str(val)]]

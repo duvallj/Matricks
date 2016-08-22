@@ -1,63 +1,66 @@
 import matrix_math as mm
-import appending as aa
 import matrix_utils as uu
 import lexer
 import sys
 import copy
 import random
 
-program_input = ''
-SPECIAL_COMS = set(['m','i','F','<'])
+last_input = 0
+SPECIAL_COMS = set(['m','i','F','<','[','{','#'])
 USED_CHARS = set(['[', ']', '{', '}', 'm', 'r', 'c', 'L',\
               'l', 'k', 's', 'g', 'j', 'i', 'a', 'b',\
               'v', 'u', 'A', 'B', 'V', 'U', 'q', 'z',\
               '"', "'", 'y', 'n', 'p', 'd', '~', 'Y',\
               'X', 'M', 'R', '?', '_', 'P', 'D', '+',\
-              '-', '*', '/', '%', '^', '|', '$', '=',\
+              '-', '*', '/', '%', '^', '|', '$', '&', '=',\
               '!', 'e', 'E', 't', 'T', '0', '1', '2',\
-              '3', '4', '5', '6', '7', '8', '9', '(',\
-              ')', '.', ';', ':', '<', '>', ',','C'])
+              '3', '4', '5', '6', '7', '8', '9', \
+              '.', '<', '>', ',', 'C', ':', ';',\
+              'W', 'Q', 'N', 'S'])
 
-def rec_replace(matrx, to, fill):
-    if isinstance(matrx,list):
-        for x in range(len(matrx)):
-            if matrx[x]==to: matrx[x] = fill
-            else: rec_replace(matrx[x], to, fill)
+MATHSET = set(['+','-','*','/','%','^','|','$','=',\
+               '&','!','e','E','t','T'])
+
+MATHDICT = {'+':mm.add,\
+            '-':mm.subtract,\
+            '*':mm.multiply,\
+            '/':mm.divide,\
+            '%':mm.modulus,\
+            '^':mm.power,\
+            '|':mm.bit_or,\
+            '$':mm.bit_xor,\
+            '=':mm.equals,\
+            '&':mm.bit_and,\
+            '!':mm.not_equals,\
+            'e':mm.less_than,\
+            'E':mm.less_than_oreq,\
+            't':mm.grea_than,\
+            'T':mm.grea_than_oreq}
+
+UNMATHSET = set(['~','`','_'])
+
+UNMATHDICT = {'~':mm.bit_not,\
+              '`':mm.inverse,\
+              '_':mm.floor}
+
+ADDSET = set(['a','u','v','b'])
+SHIFTSET = set(['A','U','V','B'])
+OPSET = set(['Y','X','M','R'])
             
 class Memory:
     def __init__(self):
-        self.current = [[]]
-        self.instructions = []
-        self.pointers = []
+        self.matrix = [[]]
+        # I made this a class in case
+        # I could store other data
 
-def as_float(val,mem):
-    if str(val)=='False': ret=0
-    else: ret = eval(str(val).replace('L',str(len(mem.current))).replace('l',str(len(mem.current[0]))))
-    if isinstance(ret, list):
-        return mm.matrix_sum(ret)
+        # This used to store multi-line files, but that
+        # was for jumps, which are now not needed
+
+def as_float(val):
+    if isinstance(val, list):
+        return mm.matrix_sum(val)
     else:
-        return float(ret)
-
-def make_matrix(formula, rows, cols, mem):
-    temp = []
-    for row in range(int(rows)):
-        temp.append([])
-        for col in range(int(cols)):
-            cpy = copy.deepcopy(formula)
-            rec_replace(cpy,'r',str(row))
-            rec_replace(cpy,'c',str(col))
-            temp[len(temp)-1].append(as_float(interpret(cpy,mem),mem))
-    mem.current = temp
-    return 0
-
-def for_loop(formula, rows, cols, mem):
-    formula = copy.deepcopy(formula)
-    for row in range(int(rows)):
-        for col in range(int(cols)):
-            cpy = copy.deepcopy(formula)
-            rec_replace(cpy,'W',str(row))
-            rec_replace(cpy,'Q',str(col))
-            interpret(cpy,mem)
+        return float(val)
 
 def _as_matrix(val):
     if isinstance(val,list):
@@ -70,226 +73,233 @@ def _as_matrix(val):
 
 def as_matrix(val):
     val = _as_matrix(val)
-    return lexer.rectanglize(copy.deepcopy(val))
+    return uu.pad(lexer.rectanglize(copy.deepcopy(val)))
 
 def _get(row, col, mem):
     if row<0 or int(row)>=len(mem.current) or col<0 or int(col)>=len(mem.current[int(row)]):
         return 0
     return mem.current[int(row)][int(col)]
 
-def _set(row, col, val, mem):
+def _set(val, row, col, mem):
     row, col = int(row), int(col)
     for r in range(len(val)):
         for c in range(len(val[r])):
-            mem.current[row+r][col+c] = val[r][c]
+            mem.matrix[row+r][col+c] = val[r][c]
     return 0
 
-def interpret(line,mem,main=-1):
-    try:
-        return float(line[0])
-    except (ValueError,TypeError,IndexError):
-        pass
+def interpret_list(inslist,mem,index=0,_rpl_Q=0,_rpl_W=10):
+    val=0
+    inslist = copy.deepcopy(inslist)
+    while index<len(inslist):
+        val = interpret(inslist[index],mem,rpl_Q=_rpl_Q,rpl_W=_rpl_W)
+        index += 1
+    return val
+
+def interpret(ins,mem,rpl_r=32,rpl_c=1,rpl_Q=0,rpl_W=10):
+    cmd = ins[0]
     global program_input
-    to_return = []
-    index = 0
-    while index<len(line):
-        cmd = line[index]
-        if not isinstance(cmd,list):
-            return cmd
-        char = cmd[0]
-        if char=='[':
-            newmem = Memory()
-            newmem.instructions = copy.deepcopy(mem.instructions)
-            interpret(cmd[1],newmem)
-            return newmem.current
-        elif char=='{':
-            newmem = Memory()
-            newmem.instructions = copy.deepcopy(mem.instructions)
-            newmem.current = copy.deepcopy(mem.current)
-            interpret(cmd[1],newmem)
-            return newmem.current
-        if len(cmd)>2: del cmd[2]
-        cmd.append(copy.deepcopy((char in SPECIAL_COMS) and cmd[1] or [interpret(val,mem) for val in cmd[1]]))
-        rec_replace(cmd[2], 'l', str(len(mem.current[0])))
-        rec_replace(cmd[2], 'L', str(len(mem.current)))
-        if char=='m':
-            make_matrix(cmd[2][0],as_float(interpret(cmd[2][1],mem),mem),as_float(interpret(cmd[2][2],mem),mem),mem)
-        elif char=='F':
-            for_loop(cmd[2][0],as_float(interpret(cmd[2][1],mem),mem),as_float(interpret(cmd[2][2],mem),mem),mem)
-        elif char=='k':
-            mem.current=as_matrix(cmd[2][0])
-        elif char=='s':
-            _set(int(as_float(cmd[2][0],mem)),int(as_float(cmd[2][1],mem)),as_matrix(cmd[2][2]),mem)
-        elif char=='g':
-            to_return.append(_get(as_float(cmd[2][0],mem),as_float(cmd[2][1],mem),mem))
-        elif char=='j':
-            where = int(as_float(cmd[2][0],mem))
-            if where == main:
-                mem.pointers[where] = 0
-                main=where
-            line = mem.instructions[where]
-            index = mem.pointers[where]-1
-        elif char=='i':
-            line = copy.deepcopy(line)
-            to_ins=[]
-            if as_float(interpret(cmd[2][0],mem),mem):
-                to_ins=cmd[2][1]
-            else:
-                to_ins=cmd[2][2]
-            for c in range(len(to_ins)-1, -1, -1):
-                line.insert(index+1,to_ins[c])
-        elif char=='a':
-            mem.current=aa.add_right(mem.current,as_matrix(cmd[2][0]))
-        elif char=='u':
-            mem.current=aa.add_below(mem.current,as_matrix(cmd[2][0]))
-        elif char=='b':
-            mem.current=aa.add_left(mem.current,as_matrix(cmd[2][0]))
-        elif char=='v':
-            mem.current=aa.add_above(mem.current,as_matrix(cmd[2][0]))
-        elif char=='A':
-            mem.current=uu.shift_right(mem.current,as_float(cmd[2][0],mem))
-        elif char=='U':
-            mem.current=uu.shift_below(mem.current,as_float(cmd[2][0],mem))
-        elif char=='B':
-            mem.current=uu.shift_left(mem.current,as_float(cmd[2][0],mem))
-        elif char=='V':
-            mem.current=uu.shift_up(mem.current,as_float(cmd[2][0],mem))
-        elif char=='q':
-            mem.current=uu.cut_from_tl(mem.current,as_float(cmd[2][0],mem),as_float(cmd[2][1],mem))
-        elif char=='z':
-            mem.current=uu.cut_from_br(mem.current,as_float(cmd[2][0],mem),as_float(cmd[2][1],mem))
-        elif char=='"':
-            to_return.append("{}".format(ord(cmd[2][0])))
-        elif char=="'":
-            print(chr(int(as_float(cmd[2][0],mem))),end="")
-        elif char=='y':
-            if len(program_input)==0:
-                to_return.append("0")
-            else:
-                to_return.append(str(ord(program_input[0])))
-                program_input = program_input[1:]
-        elif char=='n':
-            if len(program_input)==0:
-                to_return.append("0")
-            else:
-                newinput = lexer.fuse_nums([c for c in program_input])
-                index=0
-                for num in newinput:
-                    try:
-                        nnum = float(num)
-                        to_return.append(str(nnum))
-                        index = newinput.index(num)
-                        break
-                    except (TypeError, ValueError):
-                        continue
-                if index>=len(newinput):
-                    program_input=''
+    global last_input
+    to_return = 0
+    if cmd == '[':       # I only want for loops to pass through
+        newmem = Memory()
+        newmem.instructions = copy.deepcopy(mem.instructions)
+        interpret_list(ins[1],newmem,_rpl_Q=rpl_Q,_rpl_W=rpl_W)
+        to_return = newmem.matrix
+    elif cmd == '{':
+        newmem = Memory()
+        newmem.instructions = copy.deepcopy(mem.instructions)
+        newmem.matrix = copy.deepcopy(mem.matrix)
+        interpret_list(ins[1],newmem,_rpl_Q=rpl_Q,_rpl_W=rpl_W)
+        to_return = newmem.matrix
+
+    if len(ins)>2: del ins[2]
+
+    cpy = 0
+
+    if cmd in SPECIAL_COMS:
+        cpy = ins[1]
+    else:
+        cpy = [interpret(i,mem,rpl_r=rpl_r,rpl_c=rpl_c,rpl_Q=rpl_Q,rpl_W=rpl_W) for i in ins[1]]
+
+    cpy = copy.deepcopy(cpy)
+
+    ins.append(cpy)
+    
+    if cmd == '#':
+        to_return = ins[2][0]
+    elif cmd in MATHSET:
+        to_return= mm.apply_math(ins[2][0],ins[2][1],MATHDICT[cmd])
+    elif cmd in UNMATHSET:
+        to_return= mm.apply_unmath(ins[2][0],UNMATHDICT[cmd])
+    elif cmd in ADDSET:
+        mem.matrix = uu.add(mem.matrix,as_matrix(ins[2][0]),cmd)
+        to_return= mem.matrix
+    elif cmd in SHIFTSET:
+        mem.matrix = uu.shift(mem.matrix,as_float(ins[2][0]),cmd)
+        to_return= mem.matrix
+    elif cmd in OPSET:
+        mem.matrix = uu.apply_op(mem.matrix,cmd)
+        to_return= mem.matrix
+    elif cmd == 'r':
+        to_return= rpl_r
+    elif cmd == 'c':
+        to_return= rpl_c
+    elif cmd == 'Q':
+        to_return= rpl_Q
+    elif cmd == 'W':
+        to_return= rpl_W
+    elif cmd == 'm':
+        rows = int(as_float(interpret(ins[2][1],mem,rpl_r=rpl_r,rpl_c=rpl_c,rpl_Q=rpl_Q,rpl_W=rpl_W)))
+        cols = int(as_float(interpret(ins[2][2],mem,rpl_r=rpl_r,rpl_c=rpl_c,rpl_Q=rpl_Q,rpl_W=rpl_W)))
+        mem.matrix = []
+        for r in range(rows):
+            row = []
+            for c in range(cols):
+                row.append(interpret(ins[2][0],mem,rpl_r=r,rpl_c=c,rpl_Q=rpl_Q,rpl_W=rpl_W))
+            mem.matrix.append(row)
+        to_return= mem.matrix
+    elif cmd == 'F':
+        rows = int(as_float(interpret(ins[2][1],mem,rpl_r=rpl_r,rpl_c=rpl_c,rpl_Q=rpl_Q,rpl_W=rpl_W)))
+        cols = int(as_float(interpret(ins[2][2],mem,rpl_r=rpl_r,rpl_c=rpl_c,rpl_Q=rpl_Q,rpl_W=rpl_W)))
+        for W in range(rows):
+            for Q in range(cols):
+                interpret(ins[2][0],mem,rpl_r=rpl_r,rpl_c=rpl_c,rpl_Q=Q,rpl_W=W)
+        to_return= 0
+    elif cmd == 'k':
+        mem.matrix = as_matrix(ins[2][0])
+        to_return= mem.matrix
+    elif cmd == 's':
+        _set(as_matrix(ins[2][0]),as_float(ins[2][1]),as_float(ins[2][2]),mem)
+        to_return= as_matrix(ins[2][0])
+    elif cmd == 'g':
+        to_return= _get(as_float(ins[2][0]),as_float(ins[2][1]))
+    # jumps are unecesary for now. Just use for loops
+    # I plan to add them back in eventually,
+    # but for now it's just too big of a hassle
+    #elif cmd == 'j':
+    #    to_return = 0
+    #    _inslist = copy.deepcopy(mem.instructions[int(as_float(ins[2][0]))])
+    #    _index = int(as_float(ins[2][1]))-1
+    elif cmd == 'i':
+        to_return = 0
+        if as_float(ins[2][0]):
+            to_return = ins[2][1]
+        else:
+            to_return = ins[2][2]
+        to_return = interpret(to_return,mem)
+    #no use for this, just use ascii codes
+    #elif cmd == '"': 
+    #    pass
+    elif cmd == '\'':
+        print(chr(int(as_float(ins[2][0],mem))),end="")
+        to_return = 0
+    elif cmd == 'y':
+        if len(program_input)==0:
+            last_input = 0
+            to_return= 0
+        else:
+            last_input = ord(program_input[0])
+            program_input = program_input[1:]
+            to_return= last_input
+    elif cmd == 'n':
+        last_input = 0
+        if len(program_input)>0:
+            newinput = lexer.fuse_nums([c for c in program_input])
+            index=0
+            for num in newinput:
+                try:
+                    nnum = float(num)
+                    last_input = nnum
+                    index = newinput.index(num)
+                    break
+                except (TypeError, ValueError):
+                    continue
+        if index>=len(newinput):
+            program_input=''
+        else:
+            program_input = program_input[program_input.index(newinput[index])+len(newinput[index]):]
+        to_return= last_input
+    elif cmd == 'p':
+        to_return= mm.matrix_product(as_matrix(ins[2][0]))
+    elif cmd == 'd':
+        to_return= mm.matrix_sum(as_matrix(ins[2][0]))
+    elif cmd == 'P':
+        to_return= mm.dot_product(as_matrix(ins[2][0]),as_matrix(ins[2][1]))
+    elif cmd == 'D':
+        to_return= mm.dot_sum(as_matrix(ins[2][0]),as_matrix(ins[2][1]))
+    elif cmd=='q':
+        mem.matrix=uu.cut_from_tl(mem.matrix,as_float(ins[2][0]),as_float(ins[2][1]))
+        to_return= mem.matrix
+    elif cmd=='z':
+        mem.matrix=uu.cut_from_br(mem.matrix,as_float(ins[2][0]),as_float(ins[2][1]))
+        to_return= mem.matrix
+    elif cmd == '?':
+        to_return= random.uniform(as_float(ins[2][0]),as_float(ins[2][1]))
+    elif cmd == '<':
+        ins[2] = [[interpret_list(col,mem,_rpl_Q=rpl_Q,_rpl_W=rpl_W) for col in row] for row in ins[2]]
+        to_return = uu.pad(ins[2])
+    elif cmd == 'N':
+        to_return = last_input
+    elif cmd == 'S':
+        print(str(ins[2][0]))
+        to_return = 0
+    elif cmd == 'C':
+        to_return = uu.contains(as_matrix(ins[2][0]),as_float(ins[2][1]))
+
+    return to_return
+
+def parse_args(args):
+    arg_dict = {'A':'0',\
+                'P':'0',\
+                'a':'""',\
+                'm':'[[]]',\
+                'i':'""'}
+    for index in range(len(args)):
+        if args[index].startswith('-'):
+            arg_dict[args[index][1:]] = args[index+1]
+
+def read_file(filename):
+    file = open(filename,'r')
+    data = file.read()
+    file.close()
+    return data
+
+if __name__ == '__main__':
+    #testprg = 'k|[m=rc4 4][a0Fk{s1QQa0u0}1 4z1 1X]'
+    
+    mem = Memory()
+    filename = sys.argv[1]
+    ins = lex.parse(read_file(filename))
+    arg_dict = parse_args(sys.argv[2:])
+    
+    import ast
+    for key in arg_dict: 
+        arg_dict[key] = ast.literal_eval(arg_dict[key])
+        
+    if arg_dict['a'] != "":
+        mem.matrix = [[ord(char) for char in line] for line in arg_dict['a'].split('\n')]
+        mem.matrix = uu.pad(mem.matrix)
+    else:
+        mem.matrix = arg_dict['m']
+        
+    global program_input
+    program_input = arg_dict['i']
+
+    interpret_list(ins,mem)
+    
+    if arg_dict['A']:
+        for row in mem.matrix:
+            for col in row:
+                if col == 0:  #some fonts can't handle null chars
+                    print(' ',end='')
                 else:
-                    program_input = program_input[program_input.index(newinput[index])+len(newinput[index]):]
-        elif char=='p':
-            to_return.append(mm.matrix_product(as_matrix(cmd[2][0])))
-        elif char=='d':
-            to_return.append(mm.matrix_sum(as_matrix(cmd[2][0])))
-        elif char=='Y':
-            mem.current=uu.flip_y(mem.current)
-        elif char=='X':
-            mem.current=uu.flip_x(mem.current)
-        elif char=='M':
-            mem.current=uu.turn_left(mem.current)
-        elif char=='R':
-            mem.current=uu.turn_right(mem.current)
-        elif char=='P':
-            to_return.append(mm.dot_product(as_matrix(cmd[2][0]),as_matrix(cmd[2][1])))
-        elif char=='D':
-            to_return.append(mm.dot_sum(as_matrix(cmd[2][0]),as_matrix(cmd[2][1])))
-        elif char=='+':
-            to_return.append(mm.apply_math(cmd[2][0],cmd[2][1],mm.add))
-        elif char=='-':
-            to_return.append(mm.apply_math(cmd[2][0],cmd[2][1],mm.subtract))
-        elif char=='*':
-            to_return.append(mm.apply_math(cmd[2][0],cmd[2][1],mm.multiply))
-        elif char=='/':
-            to_return.append(mm.apply_math(cmd[2][0],cmd[2][1],mm.divide))
-        elif char=='%':
-            to_return.append(mm.apply_math(cmd[2][0],cmd[2][1],mm.modulus))
-        elif char=='^':
-            to_return.append(mm.apply_math(cmd[2][0],cmd[2][1],mm.power))
-        elif char=='&':
-            to_return.append(mm.apply_math(cmd[2][0],cmd[2][1],mm.bit_and))
-        elif char=='|':
-            to_return.append(mm.apply_math(cmd[2][0],cmd[2][1],mm.bit_or))
-        elif char=='$':
-            to_return.append(mm.apply_math(cmd[2][0],cmd[2][1],mm.bit_xor))
-        elif char=='~':
-            to_return.append(mm.bit_not(cmd[2][0]))
-        elif char=='=':
-            to_return.append(mm.apply_math(cmd[2][0],cmd[2][1],mm.equals))
-        elif char=='!':
-            to_return.append(mm.apply_math(cmd[2][0],cmd[2][1],mm.not_equals))
-        elif char=='e':
-            to_return.append(mm.apply_math(cmd[2][0],cmd[2][1],mm.less_than))
-        elif char=='E':
-            to_return.append(mm.apply_math(cmd[2][0],cmd[2][1],mm.less_than_oreq))
-        elif char=='t':
-            to_return.append(mm.apply_math(cmd[2][0],cmd[2][1],mm.grea_than))
-        elif char=='T':
-            to_return.append(mm.apply_math(cmd[2][0],cmd[2][1],mm.grea_than_oreq))
-        elif char=='?':
-            to_return.append(random.uniform(as_float(cmd[2][0],mem),as_float(cmd[2][1],mem)))
-        elif char=='_':
-            to_return.append(mm.floor(cmd[2][0]))
-        elif char=='C':
-            to_return.append(uu.contains(as_matrix(cmd[2][0]),as_float(cmd[2][1],mem)))
-        elif char=='<':
-            cmd[2] = [[interpret(col,mem) for col in row] for row in cmd[2]]
-            to_return.append(uu.pad(cmd[2]))
-        index+=1
-        if main != -1:
-            mem.pointers[main] = index
-    if len(to_return)==0:
-        return 0
-    else:
-        return to_return.pop()
-
-def main(mem):
-    mem.instructions = [lexer.parse_line(line) for line in lexer.read_file(sys.argv[1])]
-    mem.pointers = [0 for x in range(len(mem.instructions))]
-    mem.current = as_matrix(eval(sys.argv[2]))
-    global program_input
-    program_input = sys.argv[3]
-    #print(mem.instructions[0])
-    interpret(copy.deepcopy(mem.instructions[0]),mem,0)
-
-if __name__ == "__main__":
-    asciiprint=False
-    prettyprint=False
-    if sys.argv.count("--asciiprint"):
-        asciiprint=True
-        del sys.argv[sys.argv.index("--asciiprint")]
-    if sys.argv.count("--prettyprint"):
-        prettyprint=True
-        del sys.argv[sys.argv.index("--prettyprint")]
-    if len(sys.argv)==0:
-        sys.argv.append("")
-    if len(sys.argv)==1:
-        sys.argv.append("./sublist.cks")
-    if len(sys.argv)==2:
-        sys.argv.append('[[3,3,3,1,3]]')
-    if len(sys.argv)==3:
-        sys.argv.append('')
-    mem=Memory()
-    main(mem)
-    if asciiprint:
-        for row in mem.current:
-            st=""
+                    print(chr(col),end='')
+            print()
+    elif arg_dict['P']:
+        for row in mem.matrix:
             for col in row:
-                st+=chr(int(col))
-            print(st)
-    elif prettyprint:
-        for row in mem.current:
-            st=""
-            for col in row:
-                st+=str(col)+" "
-            print(st)
+                    print(col,end='\t')
+            print()
     else:
-        print(mem.current)
+        print(mem.matrix)
+    
