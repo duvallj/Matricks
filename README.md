@@ -4,6 +4,7 @@ A semi-golfing language built around matrix operations
 # Documentation
 ## How to run
  * `matricks.py <filename> [ARGS]`
+ * 
  ### Command line arguments
 
 | Argument | Default | Description |
