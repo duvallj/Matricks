@@ -34,7 +34,7 @@ A semi-golfing language built around matrix operations
  * All commands are prefix
  * All commands have a set number of arguments
  * Example: `m=rc5 5k|{}{X}`
-  * `m` is taking `=rc`, `4`, and `4` as its arguments
+  * `m` is taking `=rc`, `5`, and `5` as its arguments
    * `=` is taking `r` and `c` as its arguments.
     * `r` and `c` take no arguments
   * After `m` is evaluated, the interpreter moves on to `k`
