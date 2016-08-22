@@ -2,10 +2,19 @@
 A semi-golfing language built around matrix operations
 
 # Documentation
+<<<<<<< HEAD
 ## How to run
  * `matricks.py <filename> [ARGS]`
  
 ### Command line arguments
+=======
+### How to run
+ * `matricks.py <filename> <matrix> <input> [flags]`
+  * Matrix will be padded with 0s to become retangular if it is not already.
+  * `--asciiprint`: Prints values of cells as ascii characters formatted in a rectangle with newlines. 0 is assumed to be a single space.
+  * `--prettyprint`: Prints numerical values of the cells.
+  * `--asciiinput`: Instead of reading matrix of numerical values, read as the value of the ascii charactes. `[],\` are special, need to be escaped with `\`.
+>>>>>>> origin/master
 
 | Argument | Default | Description |
 |---|---|---|
@@ -23,11 +32,13 @@ A semi-golfing language built around matrix operations
  * Only 2 data types, 2d matrix and float
  * Float cast to 1x1 matrix containing value
  * Matrix cast to float as sum of elements
+
 ### Scope
  * New scopes created using `[...]`, `{...}`, or `<<...>,<...>>`
  * Code inside brackets evaulated to make new matrix
  * `[...]` starts with blank matrix
  * `{...}` starts with copy of current matrix
+<<<<<<< HEAD
  * `<<..,..>,<..,..>>` interprets each command at each position to make a matrix
  
 ## Commands
@@ -52,6 +63,24 @@ A semi-golfing language built around matrix operations
 | Q  |  0 | Substitute col # in the formula in `F`. Otherwise is the constant 10 |
 | L  |  0 | Substitue # of rows for current matrix  |
 | l  |  0 | Substitue # of cols for current matrix  |
+=======
+
+## Commands
+ * All non-arithmetic commands take arguments like so: `<command>:<arg1>:<arg2>;`
+  * Empty arguments are assumed to be 0
+  * However, all args must exist
+
+| Command  | # args | Description  |
+|---|---|---|
+| m  |  3 [expression f][float x][float y] | Makes a new matrix (x rows by y cols) with the formula (f) specified  |
+| r  |  0 | Substitute row # in the forumla in `m` |
+| c  |  0 | Substitute col # in the formula in `m`  |
+| F  |  3 [expression f][float x][float y] | Runs a double-nested for loop `{0..y-1}{0..x-1}` with the formula specified |
+| W  |  0 | Substitute row # in the formula in `F` |
+| Q  |  0 | Substitute col # in the formula in `F` |
+| L  |  0 | Substitute # of rows for current matrix  |
+| l  |  0 | Substitute # of cols for current matrix  |
+>>>>>>> origin/master
 | k  |  1 [matrix x] | Sets to current matrix to `x`  |
 | s  |  3 [float v][float r][float c] |  Sets the spot at `(r,c)` to `v` |
 | g  |  2 [float r][float c] |  Gets the value at `(r,c)` |
@@ -67,8 +96,14 @@ A semi-golfing language built around matrix operations
 | U  |  1 [float u] | Rotates the current matrix down by `u` units  |
 | q  |  2 [float d][float r] |  Slices the current matrix, cutting down `d` units and right `r` units from the top left. |
 | z  |  2 [float u][float l] |  Slices the current matrix, cutting up `u` units and left `l` units from the bottom right. |
+<<<<<<< HEAD
 | '  |  1 [float f] | Prints out the ASCII character with value `f` (rounded towards negative infinity).  |
 | y  | 0 |  Returns the next byte of input. 0 for no more input. |
+=======
+| "  |  1 [character c] | Returns the ASCII value of `c`.  |
+| '  |  1 [float f] | Prints out the ASCII character with value `f`.  |
+| y  | 0 |  Returns the next byte of input. 0 for eof |
+>>>>>>> origin/master
 | n  | 0 | Returns the next valid float from input. 0 for no more values. |
 | N  | 0 | Returns the last input given out. If no input has been given yet, returns 0. |
 | p  | 1 [matrix x] | Returns all elements in `x` multiplied together |
@@ -83,10 +118,13 @@ A semi-golfing language built around matrix operations
 | `_` | 1 [float a] | Returns the float rounded towards negative infinity |
 | `_` | 1 [matrix x] | Returns a matrix with every element in the original rounded towards negative infinity |
 | C  | 2 [matrix x][float f] | Returns 1 if `f` can be found in `x`, 0 otherwise. |
+<<<<<<< HEAD
 | ``` | 1 [float a] | Returns the float multiplied by -1 |
 | ``` | 1 [matrix x] | Returns a matrix with every element in the original multiplied by -1 |
 
 ### Arithmetic commands
+=======
+>>>>>>> origin/master
 
  * 1st arg is float and 2nd arg is float = 2 floats with the operation done
  * 1st arg is float and 2nd arg is matrix = operation applied to every value in matrix
@@ -98,18 +136,18 @@ A semi-golfing language built around matrix operations
 |---|---|
 | P  |  Needs 2 matricies. Returns product |
 | D  |  Needs 2 matricies. Returns sum |
-| +  |  Sum |
-| -  |  Difference |
-| *  |  Product |
-| /  |  Quotient |
-| %  |  Modulus |
-| ^  |  Exponent |
-| &  |  Bitwise AND |
-| |  |  Bitwise OR |
-| $  |  Bitwise XOR |
-| =  |  Equals |
-| !  |  Not euals |
-| e  |  Less than |
-| E  |  Less than or equal to |
-| t  |  Greater than |
-| T  |  Greater than or equal to |
+| `+`  |  Sum |
+| `-`  |  Difference |
+| `*`  |  Product |
+| `/`  |  Quotient |
+| `%`  |  Modulus |
+| `^`  |  Exponent |
+| `&`  |  Bitwise AND |
+| `|`  |  Bitwise OR |
+| `$`  |  Bitwise XOR |
+| `=`  |  Equals |
+| `!`  |  Not euals |
+| `e`  |  Less than |
+| `E`  |  Less than or equal to |
+| `t`  |  Greater than |
+| `T`  |  Greater than or equal to |
