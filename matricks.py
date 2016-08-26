@@ -102,12 +102,12 @@ def interpret(ins,mem,rpl_r=32,rpl_c=1,rpl_Q=0,rpl_W=10):
     to_return = 0
     if cmd == '[':       # I only want for loops to pass through
         newmem = Memory()
-        newmem.instructions = copy.deepcopy(mem.instructions)
+        #newmem.instructions = copy.deepcopy(mem.instructions)
         interpret_list(ins[1],newmem,_rpl_Q=rpl_Q,_rpl_W=rpl_W)
         to_return = newmem.matrix
     elif cmd == '{':
         newmem = Memory()
-        newmem.instructions = copy.deepcopy(mem.instructions)
+        #newmem.instructions = copy.deepcopy(mem.instructions)
         newmem.matrix = copy.deepcopy(mem.matrix)
         interpret_list(ins[1],newmem,_rpl_Q=rpl_Q,_rpl_W=rpl_W)
         to_return = newmem.matrix
@@ -148,6 +148,10 @@ def interpret(ins,mem,rpl_r=32,rpl_c=1,rpl_Q=0,rpl_W=10):
         to_return= rpl_Q
     elif cmd == 'W':
         to_return= rpl_W
+    elif cmd == 'L':
+        to_return = float(len(mem.matrix))
+    elif cmd == 'l':
+        to_return = float(len(mem.matrix[0]))
     elif cmd == 'm':
         rows = int(as_float(interpret(ins[2][1],mem,rpl_r=rpl_r,rpl_c=rpl_c,rpl_Q=rpl_Q,rpl_W=rpl_W)))
         cols = int(as_float(interpret(ins[2][2],mem,rpl_r=rpl_r,rpl_c=rpl_c,rpl_Q=rpl_Q,rpl_W=rpl_W)))
@@ -258,6 +262,8 @@ def parse_args(args):
         if args[index].startswith('-'):
             arg_dict[args[index][1:]] = args[index+1]
 
+    return arg_dict
+
 def read_file(filename):
     file = open(filename,'r')
     data = file.read()
@@ -269,7 +275,7 @@ if __name__ == '__main__':
     
     mem = Memory()
     filename = sys.argv[1]
-    ins = lex.parse(read_file(filename))
+    ins = lexer.lex(read_file(filename))
     arg_dict = parse_args(sys.argv[2:])
     
     import ast
@@ -290,10 +296,10 @@ if __name__ == '__main__':
     if arg_dict['A']:
         for row in mem.matrix:
             for col in row:
-                if col == 0:  #some fonts can't handle null chars
+                if int(col) == 0:  #some fonts can't handle null chars
                     print(' ',end='')
                 else:
-                    print(chr(col),end='')
+                    print(chr(int(col)),end='')
             print()
     elif arg_dict['P']:
         for row in mem.matrix:

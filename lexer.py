@@ -139,13 +139,11 @@ def tree(cmds,endchar=None,index=0):
         elif cmd == '<':
             end = find_end(''.join(cmds[index:]))
             l = rectanglize(brace_expression(''.join(cmds[index:end+1])))
-            l = [[lex(col) for col in row] for row in l]
-            index = end
+            l = [[lex(col) if col != '' else ['#', [0.0]] for col in row] for row in l]
+            index = end+index
             cnode.args = l
         elif cmd in SCOPE:
-            cnode.args, index = tree(cmds,\
-                                     endchar=DESCOPE[SCOPE.index(cmd)],\
-                                     index=index+1)
+            cnode.args, index = tree(cmds,endchar=DESCOPE[SCOPE.index(cmd)],index=index+1)
             
         if pnode is None:
             cmdlist.append(cnode)
@@ -165,4 +163,4 @@ def lex(cmdstring):
     return tree(tokenize(cmdstring))[0]
 
 if __name__ == '__main__':
-    print(lex('k<g-L1-l1,gWQ,gQW>'))
+    print(lex('Xq1c'))
