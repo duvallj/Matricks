@@ -47,3 +47,9 @@ Temporary Items
 .apdisk
 *.txt
 *.pyc
+
+# Test files
+*.mtrx
+
+# Stupid pycharm
+.idea
